@@ -1,33 +1,36 @@
 import "./lib/db";
 import express from "express";
 import { NextFunction, Request, Response } from "express";
+import { engine } from "express-handlebars";
 
 const app = express();
 const port = process.env.PORT || 3333;
 
-app.get("/", (req, res) => {
-  res.type("text/plain");
-  res.send("Meadowlark Travel");
-});
+// configure Handlebars view engine
+app.engine(
+  "handlebars",
+  engine({
+    defaultLayout: "main",
+  })
+);
 
-app.get("/about", (req, res) => {
-  res.type("text/plain");
-  res.send("About Meadowlark Travel");
-});
+app.set("view engine", "handlebars");
+
+app.get("/", (req, res) => res.render("home"));
+
+app.get("/about", (req, res) => res.render("about"));
 
 // custom 404 page
 app.use((req, res) => {
-  res.type("text/plain");
   res.status(404);
-  res.send("404 - Not Found");
+  res.render("404");
 });
 
 // custom 500 page
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.message);
-  res.type("text/plain");
   res.status(500);
-  res.send("500 - Server Error");
+  res.render("500");
 });
 
 app.listen(port, () =>
