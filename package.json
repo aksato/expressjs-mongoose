@@ -11,6 +11,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "express": "^4.17.1",
     "express-handlebars": "^7.0.7",
     "mongoose": "^5.12.5"
