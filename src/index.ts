@@ -16,6 +16,8 @@ app.engine(
 
 app.set("view engine", "handlebars");
 
+app.use(express.static(__dirname + "/public"));
+
 app.get("/", (req, res) => res.render("home"));
 
 app.get("/about", (req, res) => res.render("about"));
