@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { getVacations } from "./db";
 
 export const home = (req: Request, res: Response) => res.render("home");
 export const about = (req: Request, res: Response) => res.render("about");
@@ -26,3 +27,17 @@ export const newsletterSignupProcess = (req: Request, res: Response) => {
 
 export const newsletterSignupThankYou = (req: Request, res: Response) =>
   res.render("newsletter-signup-thank-you");
+
+export const listVacations = async (req: Request, res: Response) => {
+  const vacations = await getVacations({ available: true });
+  const context = {
+    vacations: vacations.map((vacation) => ({
+      sku: vacation.sku,
+      name: vacation.name,
+      description: vacation.description,
+      price: "$" + vacation.price.toFixed(2),
+      inSeason: vacation.inSeason,
+    })),
+  };
+  res.render("vacations", context);
+};

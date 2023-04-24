@@ -32,6 +32,8 @@ app.post("/newsletter-signup/process", handlers.newsletterSignupProcess);
 
 app.get("/newsletter-signup/thank-you", handlers.newsletterSignupThankYou);
 
+app.get("/vacations", handlers.listVacations);
+
 // custom 404 page
 app.use(handlers.notFound);
 
