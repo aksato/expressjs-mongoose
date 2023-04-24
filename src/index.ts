@@ -2,6 +2,7 @@ import "./lib/db";
 import express from "express";
 import { NextFunction, Request, Response } from "express";
 import { engine } from "express-handlebars";
+import * as handlers from "./lib/handlers";
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -20,20 +21,15 @@ app.use(express.static("public"));
 
 app.get("/", (req, res) => res.render("home"));
 
-app.get("/about", (req, res) => res.render("about"));
+app.get("/", handlers.home);
+
+app.get("/about", handlers.about);
 
 // custom 404 page
-app.use((req, res) => {
-  res.status(404);
-  res.render("404");
-});
+app.use(handlers.notFound);
 
 // custom 500 page
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.message);
-  res.status(500);
-  res.render("500");
-});
+app.use(handlers.serverError);
 
 app.listen(port, () =>
   console.log(
