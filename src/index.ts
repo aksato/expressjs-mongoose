@@ -2,11 +2,13 @@ import "./lib/db";
 import express from "express";
 import { engine } from "express-handlebars";
 import bodyParser from "body-parser";
-import expressSession from "express-session";
 import { sessionOptions } from "./lib/session";
 import * as handlers from "./lib/handlers";
-import { createAuth } from "./lib/auth";
 import { IUser } from "./models/user";
+import cookieParser from "cookie-parser";
+import expressSession from "express-session";
+import { createAuth } from "./lib/auth";
+
 declare module "express-session" {
   interface SessionData {
     authRedirect: string;
@@ -39,13 +41,17 @@ app.engine(
   })
 );
 
+app.use(cookieParser());
+
+app.use(expressSession(sessionOptions));
+
 const auth = createAuth(app, {
   // baseUrl is optional; it will default to localhost if you omit it;
   // it can be helpful to set this if you're not working on
   // your local machine. For example, if you were using a staging server,
   // you might set the BASE_URL environment variable to
   // https://staging.meadowlark.com
-  baseUrl: process.env.BASE_URL,
+  baseUrl: process.env.BASE_URL || "",
   providers: {
     facebook: {
       appId: process.env.FACEBOOK_APP_ID,
@@ -56,18 +62,15 @@ const auth = createAuth(app, {
   failureRedirect: "/unauthorized",
 });
 
-// auth.init() links in Passport middleware:
-auth.init();
-// now we can specify our auth routes:
-auth.registerRoutes();
-
 app.set("view engine", "handlebars");
 
 app.use(express.static("public"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(expressSession(sessionOptions));
+auth.init();
+
+auth.registerRoutes();
 
 app.get("/", handlers.home);
 
