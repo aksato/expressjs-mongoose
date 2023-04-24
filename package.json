@@ -11,14 +11,21 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@types/passport": "^1.0.12",
     "body-parser": "^1.20.2",
+    "connect-mongo": "^5.0.0",
     "express": "^4.17.1",
     "express-handlebars": "^7.0.7",
-    "mongoose": "^5.12.5"
+    "express-session": "^1.17.3",
+    "mongoose": "^5.12.5",
+    "passport": "^0.6.0",
+    "passport-facebook": "^3.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
+    "@types/express-session": "^1.17.7",
     "@types/node": "^14.14.22",
+    "@types/passport-facebook": "^2.1.11",
     "eslint": "^8.38.0",
     "nodemon": "^2.0.7",
     "ts-node": "^10.8.1",

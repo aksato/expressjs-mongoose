@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { IVacation, Vacation } from "../models/vacation";
+import { IUser, User } from "../models/user";
 
 if (!process.env.MONGO_URL) {
   throw new Error("Please add the MONGO_URL environment variable");
@@ -19,6 +20,16 @@ database.on(
 database.once("open", () => console.log("✅ mongodb connected successfully"));
 
 mongoose.Promise = Promise;
+
+export const getUserById = async (id: number) => User.findById(id);
+export const getUserByAuthId = async (authId: string) =>
+  User.findOne({ authId });
+export const addUser = async (data: {
+  authId: string;
+  name: string;
+  role: string;
+  created: Date;
+}) => new User(data).save();
 
 Vacation.find((err: any, vacations: IVacation[]) => {
   if (err) return console.error(err);
