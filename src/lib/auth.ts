@@ -106,6 +106,7 @@ export const createAuth = (app: Express, options: AuthOptions) => {
           failureRedirect: options.failureRedirect,
         })(req, res, next);
         console.log("after");
+        res.render("about");
       };
       // register Facebook routes
       app.get("/auth/facebook", authFacebook);
