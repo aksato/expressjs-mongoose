@@ -100,9 +100,9 @@ export const createAuth = (app: Express, options: AuthOptions) => {
             failureRedirect: options.failureRedirect,
           })(req, res, next);
           console.log(ans);
-          return ans;
+          next();
         },
-        (req: Request<{}, {}, {}, { redirect: string }>, res) => {
+        (req: Request<{}, {}, {}, { redirect: string }>, res: Response) => {
           console.log("successful /auth/facebook/callback");
           // we only get here on successful authentication
           handleRedirect(req, res, options);
