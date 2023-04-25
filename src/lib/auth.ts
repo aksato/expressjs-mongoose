@@ -62,23 +62,23 @@ export const createAuth = (app: Express, options: AuthOptions) => {
           (accessToken, refreshToken, profile, done) => {
             const authId = "facebook:" + profile.id;
             console.log(authId);
-            db.getUserByAuthId(authId)
-              .then((user) => {
-                if (user) return done(null, user);
-                else {
-                  db.addUser({
-                    authId: authId,
-                    name: profile.displayName,
-                    created: new Date(),
-                    role: "customer",
-                  })
-                    .then((user) => done(null, user))
-                    .catch((err) => done(err, null));
-                }
-              })
-              .catch((err) => {
-                if (err) return done(err, null);
-              });
+            db.getUserByAuthId(authId).then((user) => {
+              return done(null, user);
+              // if (user) return done(null, user);
+              // else {
+              //   db.addUser({
+              //     authId: authId,
+              //     name: profile.displayName,
+              //     created: new Date(),
+              //     role: "customer",
+              //   })
+              //     .then((user) => done(null, user))
+              //     .catch((err) => done(err, null));
+              // }
+            });
+            // .catch((err) => {
+            // if (err) return done(err, null);
+            // });
           }
         )
       );
