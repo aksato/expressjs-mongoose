@@ -18,9 +18,13 @@ interface AuthOptions {
   providers: { [key: string]: IAuthProvider };
 }
 
-passport.serializeUser((user, done) => done(null, user.user?._id));
+passport.serializeUser((user, done) => {
+  console.log("serialize", user);
+  return done(null, user.user?._id);
+});
 
 passport.deserializeUser<number>((id, done) => {
+  console.log("deserialize", id);
   db.getUserById(id)
     .then((user) => done(null, { user: user }))
     .catch((err) => done(err, null));
@@ -63,6 +67,7 @@ export const createAuth = (app: Express, options: AuthOptions) => {
             const authId = "facebook:" + profile.id;
             console.log(authId);
             db.getUserByAuthId(authId).then((user) => {
+              console.log(user);
               return done(null, user);
               // if (user) return done(null, user);
               // else {
