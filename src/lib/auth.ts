@@ -94,9 +94,13 @@ export const createAuth = (app: Express, options: AuthOptions) => {
       app.get("/auth/facebook", authFacebook);
       app.get(
         "/auth/facebook/callback",
-        passport.authenticate("facebook", {
-          failureRedirect: options.failureRedirect,
-        }),
+        () => {
+          console.log(options);
+          passport.authenticate("facebook", {
+            failureRedirect: options.failureRedirect,
+          });
+          console.log("hey");
+        },
         (req: Request<{}, {}, {}, { redirect: string }>, res) => {
           console.log("successful /auth/facebook/callback");
           // we only get here on successful authentication
