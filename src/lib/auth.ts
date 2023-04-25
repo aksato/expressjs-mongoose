@@ -102,11 +102,16 @@ export const createAuth = (app: Express, options: AuthOptions) => {
         { redirect: string }
       > = (req, res, next) => {
         console.log("before");
+        const redirectUrl =
+          req.session.authRedirect ||
+          req.query.redirect ||
+          options.successRedirect;
+        delete req.session.authRedirect; // harmless if it doesn't exist
         passport.authenticate("facebook", {
+          successRedirect: "/",
           failureRedirect: options.failureRedirect,
         })(req, res, next);
         console.log("after");
-        handleRedirect(req, res, options);
       };
       // register Facebook routes
       app.get("/auth/facebook", authFacebook);
