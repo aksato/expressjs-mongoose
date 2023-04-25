@@ -3,7 +3,7 @@ import passportFacebook from "passport-facebook";
 import * as db from "./db";
 import { Express, RequestHandler } from "express";
 const FacebookStrategy = passportFacebook.Strategy;
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { IUser } from "../models/user";
 
 interface IAuthProvider {
@@ -37,13 +37,6 @@ function handleRedirect(
   // an example.  req.query.redirect is also provided for testing & future expansion.
   const redirectUrl =
     req.session.authRedirect || req.query.redirect || options.successRedirect;
-  console.log(
-    redirectUrl,
-    code,
-    req.session.authRedirect,
-    req.query.redirect,
-    options.successRedirect
-  );
   delete req.session.authRedirect; // harmless if it doesn't exist
   res.redirect(code, redirectUrl);
 }
@@ -56,6 +49,7 @@ export const createAuth = (app: Express, options: AuthOptions) => {
   return {
     init: function () {
       const config = options.providers;
+      console.log(options);
 
       // configure Facebook strategy
       passport.use(
@@ -67,6 +61,7 @@ export const createAuth = (app: Express, options: AuthOptions) => {
           },
           (accessToken, refreshToken, profile, done) => {
             const authId = "facebook:" + profile.id;
+            console.log(authId);
             db.getUserByAuthId(authId)
               .then((user) => {
                 if (user) return done(null, user);
@@ -85,8 +80,11 @@ export const createAuth = (app: Express, options: AuthOptions) => {
           }
         )
       );
+      console.log("aaaa");
       app.use(passport.initialize());
+      console.log("bbbb");
       app.use(passport.session());
+      console.log("cccc");
     },
     registerRoutes: () => {
       const authFacebook: RequestHandler<{}, {}, {}, { redirect: string }> = (
@@ -101,11 +99,9 @@ export const createAuth = (app: Express, options: AuthOptions) => {
       app.get("/auth/facebook", authFacebook);
       app.get(
         "/auth/facebook/callback",
-        (req: Request<{}, {}, {}, { redirect: string }>, res: Response) => {
-          console.log("successful /auth/facebook/callback");
-          // we only get here on successful authentication
-          handleRedirect(req, res, options);
-        }
+        passport.authenticate("facebook", {
+          failureRedirect: options.failureRedirect,
+        })
       );
     },
   };
