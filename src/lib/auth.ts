@@ -95,14 +95,21 @@ export const createAuth = (app: Express, options: AuthOptions) => {
         if (req.query.redirect) req.session.authRedirect = req.query.redirect;
         passport.authenticate("facebook")(req, res, next);
       };
-      // register Facebook routes
-      app.get("/auth/facebook", authFacebook);
-      app.get(
-        "/auth/facebook/callback",
+
+      const authFacebookCallback: RequestHandler<{}, {}, {}, {}> = (
+        req,
+        res,
+        next
+      ) => {
+        console.log("before");
         passport.authenticate("facebook", {
           failureRedirect: options.failureRedirect,
-        })
-      );
+        });
+        console.log("after");
+      };
+      // register Facebook routes
+      app.get("/auth/facebook", authFacebook);
+      app.get("/auth/facebook/callback", authFacebookCallback);
     },
   };
 };
