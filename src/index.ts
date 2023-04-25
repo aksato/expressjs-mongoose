@@ -4,7 +4,6 @@ import { engine } from "express-handlebars";
 import bodyParser from "body-parser";
 import { sessionOptions } from "./lib/session";
 import * as handlers from "./lib/handlers";
-import { IUser } from "./models/user";
 import cookieParser from "cookie-parser";
 import expressSession from "express-session";
 import { createAuth } from "./lib/auth";

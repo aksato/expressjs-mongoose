@@ -4,7 +4,6 @@ import * as db from "./db";
 import { Express, RequestHandler } from "express";
 const FacebookStrategy = passportFacebook.Strategy;
 import { Request, Response } from "express";
-import { IUser } from "../models/user";
 
 interface IAuthProvider {
   appId: string;
@@ -19,12 +18,10 @@ interface AuthOptions {
 }
 
 passport.serializeUser((user, done) => {
-  console.log("serialize", user);
   return done(null, user._id);
 });
 
 passport.deserializeUser<number>((id, done) => {
-  console.log("deserialize", id);
   db.getUserById(id)
     .then((user) => done(null, user))
     .catch((err) => done(err, null));
@@ -48,12 +45,11 @@ function handleRedirect(
 export const createAuth = (app: Express, options: AuthOptions) => {
   // if success and failure redirects aren't specified,
   // set some reasonable defaults
-  if (!options.successRedirect) options.successRedirect = "/vacations";
+  if (!options.successRedirect) options.successRedirect = "/account";
   if (!options.failureRedirect) options.failureRedirect = "/login";
   return {
     init: function () {
       const config = options.providers;
-      console.log(options);
 
       // configure Facebook strategy
       passport.use(
@@ -66,24 +62,23 @@ export const createAuth = (app: Express, options: AuthOptions) => {
           (accessToken, refreshToken, profile, done) => {
             const authId = "facebook:" + profile.id;
             console.log(authId);
-            db.getUserByAuthId(authId).then((user) => {
-              console.log(user);
-              return done(null, user);
-              // if (user) return done(null, user);
-              // else {
-              //   db.addUser({
-              //     authId: authId,
-              //     name: profile.displayName,
-              //     created: new Date(),
-              //     role: "customer",
-              //   })
-              //     .then((user) => done(null, user))
-              //     .catch((err) => done(err, null));
-              // }
-            });
-            // .catch((err) => {
-            // if (err) return done(err, null);
-            // });
+            db.getUserByAuthId(authId)
+              .then((user) => {
+                if (user) return done(null, user);
+                else {
+                  db.addUser({
+                    authId: authId,
+                    name: profile.displayName,
+                    created: new Date(),
+                    role: "customer",
+                  })
+                    .then((user) => done(null, user))
+                    .catch((err) => done(err, null));
+                }
+              })
+              .catch((err) => {
+                if (err) return done(err, null);
+              });
           }
         )
       );
@@ -106,17 +101,15 @@ export const createAuth = (app: Express, options: AuthOptions) => {
         {},
         { redirect: string }
       > = (req, res, next) => {
-        console.log("before");
         const redirectUrl =
           req.session.authRedirect ||
           req.query.redirect ||
           options.successRedirect;
         delete req.session.authRedirect; // harmless if it doesn't exist
         passport.authenticate("facebook", {
-          successRedirect: "/",
+          successRedirect: redirectUrl,
           failureRedirect: options.failureRedirect,
         })(req, res, next);
-        console.log("after");
       };
       // register Facebook routes
       app.get("/auth/facebook", authFacebook);
