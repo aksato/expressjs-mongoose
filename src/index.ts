@@ -85,7 +85,9 @@ app.get("/newsletter-signup/thank-you", handlers.newsletterSignupThankYou);
 app.get("/vacations", handlers.listVacations);
 
 app.get("/account", (req, res) => {
+  console.log(req);
   if (!req.user) return res.redirect(303, "/unauthorized");
+  console.log(req.user);
   res.render("account", { username: req.user.name });
 });
 
