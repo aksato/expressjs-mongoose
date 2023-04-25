@@ -104,7 +104,7 @@ export const createAuth = (app: Express, options: AuthOptions) => {
         console.log("before");
         passport.authenticate("facebook", {
           failureRedirect: options.failureRedirect,
-        });
+        })(req, res, next);
         console.log("after");
       };
       // register Facebook routes
