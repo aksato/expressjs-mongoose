@@ -37,6 +37,13 @@ function handleRedirect(
   // an example.  req.query.redirect is also provided for testing & future expansion.
   const redirectUrl =
     req.session.authRedirect || req.query.redirect || options.successRedirect;
+  console.log(
+    redirectUrl,
+    code,
+    req.session.authRedirect,
+    req.query.redirect,
+    options.successRedirect
+  );
   delete req.session.authRedirect; // harmless if it doesn't exist
   res.redirect(code, redirectUrl);
 }
@@ -94,14 +101,6 @@ export const createAuth = (app: Express, options: AuthOptions) => {
       app.get("/auth/facebook", authFacebook);
       app.get(
         "/auth/facebook/callback",
-        (req: Request, res: Response, next: NextFunction) => {
-          console.log(options);
-          const ans = passport.authenticate("facebook", {
-            failureRedirect: options.failureRedirect,
-          })(req, res, next);
-          console.log(ans);
-          next();
-        },
         (req: Request<{}, {}, {}, { redirect: string }>, res: Response) => {
           console.log("successful /auth/facebook/callback");
           // we only get here on successful authentication
