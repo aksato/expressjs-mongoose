@@ -20,13 +20,13 @@ interface AuthOptions {
 
 passport.serializeUser((user, done) => {
   console.log("serialize", user);
-  return done(null, user.user?._id);
+  return done(null, user._id);
 });
 
 passport.deserializeUser<number>((id, done) => {
   console.log("deserialize", id);
   db.getUserById(id)
-    .then((user) => done(null, { user: user }))
+    .then((user) => done(null, user))
     .catch((err) => done(err, null));
 });
 

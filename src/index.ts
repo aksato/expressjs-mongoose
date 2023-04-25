@@ -18,7 +18,8 @@ declare module "express-session" {
 declare global {
   namespace Express {
     interface User {
-      user: IUser | null;
+      name: string;
+      _id?: number;
     }
   }
 }
@@ -86,7 +87,7 @@ app.get("/vacations", handlers.listVacations);
 
 app.get("/account", (req, res) => {
   if (!req.user) return res.redirect(303, "/unauthorized");
-  res.render("account", { username: req.user.user?.name });
+  res.render("account", { username: req.user.name });
 });
 
 // we also need an 'unauthorized' page
