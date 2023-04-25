@@ -3,7 +3,7 @@ import passportFacebook from "passport-facebook";
 import * as db from "./db";
 import { Express, RequestHandler } from "express";
 const FacebookStrategy = passportFacebook.Strategy;
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IUser } from "../models/user";
 
 interface IAuthProvider {
@@ -94,13 +94,13 @@ export const createAuth = (app: Express, options: AuthOptions) => {
       app.get("/auth/facebook", authFacebook);
       app.get(
         "/auth/facebook/callback",
-        () => {
+        (req: Request, res: Response, next: NextFunction) => {
           console.log(options);
-          const res = passport.authenticate("facebook", {
+          const ans = passport.authenticate("facebook", {
             failureRedirect: options.failureRedirect,
-          });
-          console.log(res);
-          return res;
+          })(req, res, next);
+          console.log(ans);
+          return ans;
         },
         (req: Request<{}, {}, {}, { redirect: string }>, res) => {
           console.log("successful /auth/facebook/callback");
