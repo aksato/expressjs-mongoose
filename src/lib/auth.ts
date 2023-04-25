@@ -96,10 +96,11 @@ export const createAuth = (app: Express, options: AuthOptions) => {
         "/auth/facebook/callback",
         () => {
           console.log(options);
-          passport.authenticate("facebook", {
+          const res = passport.authenticate("facebook", {
             failureRedirect: options.failureRedirect,
           });
-          console.log("hey");
+          console.log(res);
+          return res;
         },
         (req: Request<{}, {}, {}, { redirect: string }>, res) => {
           console.log("successful /auth/facebook/callback");
